@@ -1,47 +1,56 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
 	"sync"
 )
 
 //producer channel to pass input to consumer
-func produce(nums ...int) <-chan int{
-	out := make(chan int)
+func produce(done <-chan struct{}, nums ...int) <-chan int{
+	out := make(chan int, len(nums))
 	go func() {
+		defer close(out)
 		for _, n := range nums {
-			out <- n
+			select {
+				case out <- n:
+				case <- done:
+					return
+			}
 		}
-		close(out)
 	}()
 	return out
 }
 
 //consumer channel to square value from producer
-func consume(in <- chan int) <-chan int {
+func consume(done <-chan struct{}, in <- chan int) <-chan int {
 	out := make(chan int)
 	go func() {
+		defer close(out)
 		for n := range in {
-			out <- n * n
+			select {
+				case out <- n * n:
+				case <- done:
+					return
+			}
 		}
-		close(out)
 	}()
 	return out
 }
 
 //merge two or more goroutines
-func merge(cs ...<- chan int) <- chan int {
+func merge(done <-chan struct{}, cs ...<- chan int) <- chan int {
 	var waitgroup sync.WaitGroup
 	out := make(chan int)
 
 	output := func(c <- chan int){
+		defer waitgroup.Done()
 		for n:= range c {
-			out <- n
+			select {
+				case out <- n:
+				case <- done:
+					return
+			}
 		}
-		waitgroup.Done()
 	}
 	waitgroup.Add(len(cs))
 	for _, c:= range cs {
@@ -56,16 +65,16 @@ func merge(cs ...<- chan int) <- chan int {
 }
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("Enter a Number: ")
-		scanner.Scan()
-		int, _ := strconv.Atoi(scanner.Text())
-		c := produce(int)
-		out1 := consume(c)
-		out2 := consume(c)
-
-		out := merge(out2, out1)
+	done := make(chan struct{})
+	defer close(done)
+	arr := [5]int{1, 2, 3, 4, 5}
+	for i := 0; i < 5; i++ {
+		c := produce(done, arr[i])
+		out1 := consume(done, c)
+		out2 := consume(done, c)
+		out := merge(done, out2, out1)
 		fmt.Println(<-out)
 	}
+
+
 }
