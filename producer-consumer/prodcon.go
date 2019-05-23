@@ -1,7 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -65,11 +69,22 @@ func merge(done <-chan struct{}, cs ...<- chan int) <- chan int {
 }
 
 func main() {
+	fptr := flag.String("fpath", "nums.txt", "file path to read from")
+	flag.Parse()
+	data, err := ioutil.ReadFile(*fptr)
+	if err != nil {
+		fmt.Println("Error reading file", err)
+		return
+	}
+	str := string(data)
+	nums := strings.Split(str, "\n")
+
 	done := make(chan struct{})
 	defer close(done)
-	arr := [5]int{1, 2, 3, 4, 5}
-	for i := 0; i < 5; i++ {
-		c := produce(done, arr[i])
+
+	for i := 0; i < len(nums); i++ {
+		in, _ := strconv.Atoi(nums[i])
+		c := produce(done, in)
 		out1 := consume(done, c)
 		out2 := consume(done, c)
 		out := merge(done, out2, out1)
