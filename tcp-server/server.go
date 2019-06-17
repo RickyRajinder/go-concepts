@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -17,8 +16,9 @@ Server will start a new goroutine for each new request
 Tutorial from: https://opensource.com/article/18/5/building-concurrent-tcp-server-go
  */
 
+
 func handleConnection(c net.Conn){
-	fmt.Printf("Serving address: %s\n", c.RemoteAddr().String())
+	read := bufio.NewReader(os.Stdin)
 	for {
 		netData, err := bufio.NewReader(c).ReadString('\n')
 		if err != nil {
@@ -30,22 +30,19 @@ func handleConnection(c net.Conn){
 		if temp == "STOP" {
 			break
 		}
-
-		res := strconv.Itoa(random()) + "\n"
-		c.Write([]byte(string(res)))
+		fmt.Print("Message received from client: " + string(netData))
+		fmt.Println("Send response back to client: ")
+		msg, _ := read.ReadString('\n')
+		c.Write([]byte(string(msg)))
+		fmt.Println("Waiting on response from client...")
 	}
 	c.Close()
 }
 
-
-func random() int {
-	return rand.Intn(99) + 1
-}
-
-func main() {
+func serve(){
 	args := os.Args
 	if len(args) < 2 {
-		fmt.Println("Please enter a port number")
+		fmt.Println("Please enter a port number.")
 		return
 	}
 
@@ -55,6 +52,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("Listening on port " + args[1])
 	defer l.Close()
 	rand.Seed(time.Now().Unix())
 
@@ -66,4 +64,8 @@ func main() {
 		}
 		go handleConnection(c)
 	}
+}
+
+func main() {
+	serve()
 }
