@@ -34,7 +34,6 @@ func handleConnection(c net.Conn){
 		fmt.Println("Send response back to client: ")
 		msg, _ := read.ReadString('\n')
 		c.Write([]byte(string(msg)))
-		fmt.Println("Waiting on response from client...")
 	}
 	c.Close()
 }
