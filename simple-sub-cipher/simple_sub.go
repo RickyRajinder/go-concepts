@@ -28,6 +28,7 @@ func stringToStringArray(str string) []string {
 	return res
 }
 
+//Generates a (pseudo) random permutation of the alphabet that serves as our key
 func generateKey() string {
 	res := stringToStringArray(VALUE_SET)
 	final := make([]string, len(res))
@@ -42,6 +43,8 @@ func generateKey() string {
 	return strKey
 }
 
+//Depending on `mode`, will decrypt or encrypt the given message
+//by resolving it against the key
 func translateMessage(key, message, mode string) string {
 	translatedMsg := ""
 	charsA := VALUE_SET

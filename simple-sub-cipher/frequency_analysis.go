@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+//Map of frequency percentages of each letter (From Wikipedia)
 var frequencyOrder= map[string]float64 {
 	"A": 8.167,
 	"B": 1.492,
@@ -35,6 +36,7 @@ var frequencyOrder= map[string]float64 {
 	"Z": 0.074,
 }
 
+//Returns a map of each letter in a string with how many times it appears
 func getLetterCount(message string) map[rune]int {
 	message = strings.ToUpper(message)
 	letterCount := map[rune]int{
@@ -76,7 +78,7 @@ func getLetterCount(message string) map[rune]int {
 	return letterCount
 }
 
-
+// Gets the percentage for which the given letter appears in the string
 func getFrequencyPercentage(letter string, msgArr []string) float64 {
 	count := 0
 	for i := range msgArr {
@@ -87,6 +89,8 @@ func getFrequencyPercentage(letter string, msgArr []string) float64 {
 	return (float64(count) / float64(len(msgArr))) * 100
 }
 
+//Returns a map of each letter in the string to the percentage it appears in the string
+//Spaces, symbols, and numbers are not counted in the percentage total
 func getFrequencyValues(message string) map[string]float64 {
 	weights := map[string]float64{}
 	reg, _ := regexp.Compile("[^a-zA-Z]+")
@@ -98,6 +102,8 @@ func getFrequencyValues(message string) map[string]float64 {
 	return weights
 }
 
+//Gets the letter for which the given percentage is closest to according
+//to the reference for English letter distribution
 func getMinLetterWeightDifference(weight float64) string {
 	minDiff := math.MaxFloat32
 	letter := ""
@@ -110,6 +116,7 @@ func getMinLetterWeightDifference(weight float64) string {
 	return letter
 }
 
+//Util function to check if a given string is in an array
 func stringInSlice(str string, list []string) bool {
 	for _, v := range list {
 		if strings.ToUpper(v) == strings.ToUpper(str) {
@@ -119,6 +126,8 @@ func stringInSlice(str string, list []string) bool {
 	return false
 }
 
+//Attempts to replace each letter in the encrypted string
+//with the corresponding letter by comparing frequency values
 func findAndReplace(message string) string {
 	weights := getFrequencyValues(message)
 	newString := strings.ToUpper(message)
