@@ -26,3 +26,11 @@ func TestIsAlienSorted2(t *testing.T) {
 	}
 }
 
+func TestIsAlienSorted3(t *testing.T) {
+	words := []string{"kuvp", "q"}
+	var order = "ngxlkthsjuoqcpavbfdermiywz"
+	if !IsAlienSorted(words, order) {
+		t.Errorf("wrong")
+	}
+}
+
