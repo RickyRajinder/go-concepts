@@ -22,6 +22,7 @@ func main() {
 			}
 			input = append(input, in)
 		}
+		println(len(input))
 		for i := 0; i < len(input); i++ {
 			fmt.Printf("%c", input[i])
 		}

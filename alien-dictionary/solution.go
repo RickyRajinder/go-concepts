@@ -15,6 +15,7 @@ func IsAlienSorted(words []string, order string) bool {
 		for i := 0; i < Min(len(word1), len(word2)); i++ {
 			char1 := word1[i]
 			char2 := word2[i]
+
 			if char1 != char2 {
 				if count[char1 - 'a'] > count[char2 - 'a'] {
 					return false
