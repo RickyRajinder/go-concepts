@@ -4,8 +4,8 @@ package alien_dictionary
 func IsAlienSorted(words []string, order string) bool {
 	var count = make([]int, 26)
 
-	for _, j := range order {
-		count[j - 'a']++
+	for j := 0; j < len(order); j++ {
+		count[order[j] - 'a'] = j
 	}
 
 	loop1: for k := 0; k < len(words)-1; k++ {
