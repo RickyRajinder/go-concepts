@@ -9,7 +9,6 @@ type Solution struct {
 //O(2^N) time, O(N) space
 func RemoveInvalidParentheses(s string) []string {
 	var left, right = 0, 0
-	var sol = map[string]bool{}
 
 	if !strings.Contains(s, "(") && !strings.Contains(s, ")") {
 		return []string{s}
@@ -48,6 +47,7 @@ func RemoveInvalidParentheses(s string) []string {
 		}
 	}
 
+	var sol = map[string]bool{}
 	var dfs = func(depth, left, right, left_rem, right_rem int, curr string){}
 
 	dfs = func(depth, left, right, left_rem, right_rem int, curr string) {
